@@ -1,0 +1,97 @@
+absl-py==0.9.0
+aiohttp==3.6.2
+astroid @ file:///tmp/build/80754af9/astroid_1592495912941/work
+async-timeout==3.0.1
+atari-py==0.2.6
+attrs==19.3.0
+beautifulsoup4==4.9.1
+-e git+https://github.com/BindsNET/bindsnet@ec5b7de784425c8eaa4746b58bbe6937d4d98713#egg=BindsNET
+Box2D==2.3.10
+cachetools==4.1.1
+certifi==2020.6.20
+chardet==3.0.4
+click==7.1.2
+cloudpickle==1.3.0
+colorama==0.4.3
+cycler==0.10.0
+Cython==0.29.21
+decorator==4.4.2
+distro==1.5.0
+dm-tree==0.1.5
+filelock==3.0.12
+future==0.18.2
+google==3.0.0
+google-auth==1.19.2
+google-auth-oauthlib==0.4.1
+grpcio==1.30.0
+gym==0.17.2
+idna==2.10
+imageio==2.9.0
+iniconfig==1.0.1
+isort==4.3.21
+joblib @ file:///tmp/build/80754af9/joblib_1601912903842/work
+jsonschema==3.2.0
+kiwisolver==1.2.0
+lazy-object-proxy==1.4.3
+lz4==3.1.0
+Markdown==3.2.2
+matplotlib==3.3.1
+mccabe==0.6.1
+mkl-fft==1.1.0
+mkl-random==1.1.1
+mkl-service==2.3.0
+more-itertools==8.5.0
+msgpack==1.0.0
+multidict==4.7.6
+neat-python==0.92
+networkx==2.5
+norse==0.0.5
+numpy~=1.18.5
+oauthlib==3.1.0
+olefile==0.46
+opencv-python==4.3.0.36
+opencv-python-headless==4.3.0.36
+packaging==20.4
+pandas==1.0.5
+PettingZoo==0.1.12
+Pillow @ file:///tmp/build/80754af9/pillow_1594307295532/work
+pluggy==0.13.1
+protobuf==3.12.2
+py==1.9.0
+py-spy==0.3.3
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pyglet==1.5.0
+pylint @ file:///tmp/build/80754af9/pylint_1592496053748/work
+pyparsing==2.4.7
+pyrsistent==0.16.0
+pytest==6.0.1
+python-dateutil==2.8.1
+pytz==2020.1
+PyWavelets==1.1.1
+PyYAML==5.3.1
+ray==0.8.6
+redis==3.4.1
+requests==2.24.0
+requests-oauthlib==1.3.0
+rsa==4.6
+scikit-build==0.11.1
+scikit-image==0.17.2
+scikit-learn @ file:///tmp/build/80754af9/scikit-learn_1598376899566/work
+scipy @ file:///tmp/build/80754af9/scipy_1597686649129/work
+six==1.15.0
+soupsieve==2.0.1
+tabulate==0.8.7
+tensorboard==2.2.2
+tensorboard-plugin-wit==1.7.0
+tensorboardX==2.1
+threadpoolctl @ file:///tmp/tmp9twdgx9k/threadpoolctl-2.1.0-py3-none-any.whl
+tifffile==2020.9.3
+toml @ file:///tmp/build/80754af9/toml_1592853716807/work
+torch==1.6.0
+torchvision==0.7.0
+tqdm==4.48.2
+urllib3==1.25.9
+Werkzeug==1.0.1
+wrapt==1.11.2
+yarl==1.4.2
