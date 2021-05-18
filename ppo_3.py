@@ -28,9 +28,9 @@ flags.DEFINE_integer("episodes", 1000, "Number of training trials.")
 flags.DEFINE_float("learning_rate", 0.001, "Learning rate to use.")
 flags.DEFINE_float("gamma", 0.99, "discount factor to use")
 flags.DEFINE_integer("log_interval", 10, "In which intervals to display learning progress.")
-flags.DEFINE_integer("epoch", 10, "Training epochs per episode")
+flags.DEFINE_integer("epoch", 3, "Training epochs per episode")
 flags.DEFINE_enum("model", "super", ["super"], "Model to use for training.")
-flags.DEFINE_enum("policy", "ann-ppo", ["ann-ppo", "snn-ppo"], "Select policy to use.")
+flags.DEFINE_enum("policy", "snn-ppo", ["ann-ppo", "snn-ppo"], "Select policy to use.")
 flags.DEFINE_boolean("render", False, "Render the environment")
 flags.DEFINE_string("environment", "CartPole-v1", "Gym environment to use.")
 flags.DEFINE_integer("random_seed", 9999, "Random seed to use")
@@ -226,11 +226,11 @@ def main(args):
             a, prob = select_action(s, model, device)
             s_prime, r, done, info = env.step(a)
             r = float(r)
-            # if FLAGS.environment == 'CartPole-v1':
-            #     put_data(model, (s, a, r / 100.0, s_prime, prob[0][a].item(), done))
-            # else:
-            #     put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
-            put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
+            if FLAGS.environment == 'CartPole-v1':
+                put_data(model, (s, a, r / 100.0, s_prime, prob[0][a].item(), done))
+            else:
+                put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
+            # put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
             s = s_prime
             ep_reward += r
             if done:

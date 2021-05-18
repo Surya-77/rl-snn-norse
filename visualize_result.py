@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 colors = [['C1', 'C2'], ['C3', 'C4'], ['C5', 'C6'], ['C7', 'C8'], ['C9', 'C10']]
-seeds = ['9999']
+seeds = ['1234']
 env_name = 'CartPole-v1'
-main_filepath = f"/home/lab/PycharmProjects/norse_snn_impl/runs/{env_name}/"
+main_filepath = f"/home/lab/PycharmProjects/rl-snn-norse/runs/{env_name}/"
 filepath_snn = f"snn-super"
 filepath_ann = f"ann-super"
 filepath_ann_ac = f"ann-ac-super"
@@ -12,7 +12,7 @@ filepath_snn_ac = f"snn-ac-super"
 filepath_ann_dqn = f"ann-dqn-super"
 filepath_ann_ppo = f"ann-ppo-super"
 filepath_snn_ppo = f"snn-ppo-super"
-filepaths = [filepath_ann_ppo, filepath_snn_ppo]
+filepaths = [filepath_snn, filepath_ann, filepath_ann_ppo, filepath_snn_ppo]
 filepaths_legend = ['-'.join(i.split('-')[:-1]) for i in filepaths]
 file_ep_rew = "episode_rewards.npy"
 file_avg_rew = "running_rewards.npy"

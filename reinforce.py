@@ -157,7 +157,7 @@ def select_action(state, policy, device):
     m = torch.distributions.Categorical(probs)
     action = m.sample()
     policy.saved_log_probs.append(m.log_prob(action))
-    return action.item()
+    return action.item(), probs
 
 
 def finish_episode(policy, optimizer):
@@ -221,7 +221,7 @@ def main(args):
 
         time_steps_max = env._max_episode_steps # Default was 10000
         for t in range(1, time_steps_max):  # Don't infinite loop while learning
-            action = select_action(state, policy, device=device)
+            action, _ = select_action(state, policy, device=device)
             state, reward, done, _ = env.step(action)
             if FLAGS.render:
                 env.render()
