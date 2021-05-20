@@ -16,7 +16,7 @@ from norse.torch.functional.lif import LIFParameters
 from norse.torch.module.encode import ConstantCurrentLIFEncoder
 from norse.torch.module.leaky_integrator import LILinearCell
 from norse.torch.module.lif import LIFRecurrentCell
-
+from concurrent.futures import ThreadPoolExecutor
 
 # pytype: enable=import-error
 
@@ -27,10 +27,10 @@ flags.DEFINE_float("learning_rate", 0.001, "Learning rate to use.")
 flags.DEFINE_float("gamma", 0.99, "discount factor to use")
 flags.DEFINE_integer("log_interval", 10, "In which intervals to display learning progress.")
 flags.DEFINE_enum("model", "super", ["super"], "Model to use for training.")
-flags.DEFINE_enum("policy", "snn", ["snn", "lsnn", "ann"], "Select policy to use.")
+flags.DEFINE_enum("policy", "snn", ["snn", "ann"], "Select policy to use.")
 flags.DEFINE_boolean("render", False, "Render the environment")
 flags.DEFINE_string("environment", "CartPole-v1", "Gym environment to use.")
-flags.DEFINE_integer("random_seed", 9999, "Random seed to use")
+flags.DEFINE_integer("random_seed", 9998, "Random seed to use")
 
 
 class ANNPolicy(torch.nn.Module):
@@ -97,59 +97,23 @@ class SNNPolicy(torch.nn.Module):
             vo, so = self.readout(z1, so)
             voltages[ts, :, :] = vo
 
+        # tmp_fn = lambda in_1: lambda in_2: lambda in_3: self.parallel_integration_worker(in_1, in_2, in_3)
+        # with ThreadPoolExecutor(max_workers=4) as executor:
+        #     tmp_fn = tmp_fn(x)
+        #     tmp_fn = tmp_fn(voltages)
+        #     executor.map(tmp_fn, range(seq_length))
+
         m, _ = torch.max(voltages, 0)
         p_y = torch.nn.functional.softmax(m, dim=1)
         return p_y
 
-
-# class LSNNPolicy(torch.nn.Module):
-#     def __init__(self, model="super"):
-#         super(LSNNPolicy, self).__init__()
-#         self.state_dim = 4
-#         self.input_features = 16
-#         self.hidden_features = 128
-#         self.action_space = 2
-#         # self.affine1 = torch.nn.Linear(self.state_dim, self.input_features)
-#         self.constant_current_encoder = ConstantCurrentLIFEncoder(40)
-#         self.lif_layer = LSNNCell(
-#             2 * self.state_dim,
-#             self.hidden_features,
-#             p=LSNNParameters(method=model, alpha=100.0),
-#         )
-#         self.dropout = torch.nn.Dropout(p=0.5)
-#         self.readout = LICell(self.hidden_features, self.action_space)
-#
-#         self.saved_log_probs = []
-#         self.rewards = []
-#
-#     def forward(self, x):
-#         scale = 50
-#         x_pos = self.constant_current_encoder(torch.nn.functional.relu(scale * x))
-#         x_neg = self.constant_current_encoder(torch.nn.functional.relu(-scale * x))
-#         x = torch.cat([x_pos, x_neg], dim=2)
-#
-#         seq_length, batch_size, _ = x.shape
-#
-#         # state for hidden layer
-#         s1 = None
-#         # state for output layer
-#         so = None
-#
-#         voltages = torch.zeros(
-#             seq_length, batch_size, self.action_space, device=x.device
-#         )
-#
-#         # sequential integration loop
-#         for ts in range(seq_length):
-#             z1, s1 = self.lif_layer(x[ts, :, :], s1)
-#             z1 = self.dropout(z1)
-#             vo, so = self.readout(z1, so)
-#             voltages[ts, :, :] = vo
-#
-#         m, _ = torch.max(voltages, 0)
-#         p_y = torch.nn.functional.softmax(m, dim=1)
-#         return p_y
-
+    def parallel_integration_worker(self, x, voltages, ts):
+        s1 = so = None
+        z1, s1 = self.lif(x[ts, :, :], s1)
+        z1 = self.dropout(z1)
+        vo, so = self.readout(z1, so)
+        voltages[ts, :, :] = vo
+        return None
 
 def select_action(state, policy, device):
     state = torch.from_numpy(state).float().unsqueeze(0).to(device)

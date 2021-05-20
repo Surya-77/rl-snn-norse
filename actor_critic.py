@@ -30,7 +30,7 @@ flags.DEFINE_enum("model", "super", ["super"], "Model to use for training.")
 flags.DEFINE_enum("policy", "snn-ac", ["ann-ac", "snn-ac"], "Select policy to use.")
 flags.DEFINE_boolean("render", False, "Render the environment")
 flags.DEFINE_string("environment", "CartPole-v1", "Gym environment to use.")
-flags.DEFINE_integer("random_seed", 9999, "Random seed to use")
+flags.DEFINE_integer("random_seed", 9998, "Random seed to use")
 
 
 class ANNPolicy(torch.nn.Module):
@@ -80,7 +80,6 @@ class SNNPolicy(torch.nn.Module):
         self.readout_actor = LILinearCell(self.hidden_features, self.output_features)
         self.readout_critic = LILinearCell(self.hidden_features, 1)
         self.saved_actions = []
-        self.saved_log_probs = []
         self.rewards = []
 
     def forward(self, x):

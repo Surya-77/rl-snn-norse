@@ -5,13 +5,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 colors = [['C1', 'C2'], ['C3', 'C4'], ['C5', 'C6'], ['C7', 'C8'], ['C9', 'C10']]
-seeds = ['9999']
+seeds = ['1234']
 env_name = 'CartPole-v1'
-main_filepath = f"/home/lab/PycharmProjects/norse_snn_impl/runs/{env_name}/dqn_param_test/"
-filepath_test = [f"ann-dqn-super"]
-test_versions = ['1', '6', '7', '8']
-filepaths = ['-'.join(i) for i in zip(filepath_test*len(test_versions), test_versions)]
-filepaths_legend = ['-'.join(i.split('-')[:-2]) for i in filepaths]
+main_filepath = f"/home/lab/PycharmProjects/rl-snn-norse/runs/{env_name}/ppo_param_test/"
+# filepath_test = [f"ann-dqn-super"]
+# test_versions = ['1', '6', '7', '8']
+# filepaths = ['-'.join(i) for i in zip(filepath_test*len(test_versions), test_versions)]
+filepaths = ['ann-ppo-epoch10-super', 'ann-ppo-epoch3-super', 'snn-ppo-epoch10-super', 'snn-ppo-epoch3-super']
+filepaths_legend = filepaths
+# filepaths_legend = ['-'.join(i.split('-')[:-2]) for i in filepaths]
 file_ep_rew = "episode_rewards.npy"
 file_avg_rew = "running_rewards.npy"
 

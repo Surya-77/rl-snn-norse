@@ -30,10 +30,10 @@ flags.DEFINE_float("gamma", 0.99, "discount factor to use")
 flags.DEFINE_integer("log_interval", 10, "In which intervals to display learning progress.")
 flags.DEFINE_integer("epoch", 1, "Training epochs per episode")
 flags.DEFINE_enum("model", "super", ["super"], "Model to use for training.")
-flags.DEFINE_enum("policy", "snn-ppo", ["ann-ppo", "snn-ppo"], "Select policy to use.")
+flags.DEFINE_enum("policy", "ann-ppo", ["ann-ppo", "snn-ppo"], "Select policy to use.")
 flags.DEFINE_boolean("render", False, "Render the environment")
 flags.DEFINE_string("environment", "CartPole-v1", "Gym environment to use.")
-flags.DEFINE_integer("random_seed", 9999, "Random seed to use")
+flags.DEFINE_integer("random_seed", 9998, "Random seed to use")
 
 
 class ANNPPO(nn.Module):
@@ -145,27 +145,37 @@ def make_batch(network):
     s_prime = torch.tensor(s_prime_lst, dtype=torch.float)
     done_mask = torch.tensor(done_lst, dtype=torch.float)
     prob_a = torch.tensor(prob_a_lst)
-    network.data = []
+    del network.data[:]
     return s, a, r, s_prime, done_mask, prob_a
 
 
 def train_net(network):
     s, a, r, s_prime, done_mask, prob_a = make_batch(network)
+    batch_size = len(s)
 
     for i in range(FLAGS.epoch):
-        td_target = r + FLAGS.gamma * network(s_prime, model_type='v') * done_mask
-        delta = td_target - network(s, model_type='v')
-        delta = delta.detach().numpy()
+
+        td_target_lst = []
+        delta_lst = []
+        for i in range(batch_size):
+            td_target = r[i] + FLAGS.gamma * network(s_prime[i], model_type='v') * done_mask[i]
+            delta = td_target - network(s[i], model_type='v')
+            delta = delta.detach().numpy()
+            delta_lst.append(delta)
+            td_target_lst.append(td_target)
 
         advantage_lst = []
         advantage = 0.0
-        for delta_t in delta[::-1]:
+        for delta_t in delta_lst:
             advantage = FLAGS.gamma * lmbda * advantage + delta_t[0]
             advantage_lst.append([advantage])
         advantage_lst.reverse()
         advantage = torch.tensor(advantage_lst, dtype=torch.float)
 
-        pi = network(s, softmax_dim=1, model_type='pi')
+        pi_lst = []
+        for i in range(batch_size):
+            pi_lst.append(network(s[i], softmax_dim=0, model_type='pi'))
+        pi = torch.stack(pi_lst)
         pi_a = pi.gather(1, a)
         ratio = torch.exp(torch.log(pi_a) - torch.log(prob_a))  # a/b == exp(log(a)-log(b))
 
@@ -174,8 +184,7 @@ def train_net(network):
         loss = -torch.min(surr1, surr2) + F.smooth_l1_loss(network(s, model_type='v'), td_target.detach())
 
         network.optimizer.zero_grad()
-        # loss.mean().backward()
-        loss.sum().backward()
+        loss.mean().backward()
         network.optimizer.step()
 
 
@@ -228,11 +237,11 @@ def main(args):
             a, prob = select_action(s, model, device)
             s_prime, r, done, info = env.step(a)
             r = float(r)
-            if FLAGS.environment == 'CartPole-v1':
-                put_data(model, (s, a, r / 100.0, s_prime, prob[0][a].item(), done))
-            else:
-                put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
-            # put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
+            # if FLAGS.environment == 'CartPole-v1':
+            #     put_data(model, (s, a, r / 100.0, s_prime, prob[0][a].item(), done))
+            # else:
+            #     put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
+            put_data(model, (s, a, r, s_prime, prob[0][a].item(), done))
             s = s_prime
             ep_reward += r
             if done:

@@ -6,15 +6,15 @@ from absl import app
 
 SavedAction = namedtuple('SavedAction', ['log_prob', 'value'])
 # import ppo_3
-# import actor_critic
-import reinforce
+import actor_critic
+# import reinforce
 
 episodes = 100
 environment = f"CartPole-v1"
 arch = "snn"
-algo = ""
+algo = "ac"
 # network_type = f"{arch}-{algo}-super"
-network_type = f"{arch}{algo}-super"
+network_type = f"{arch}-{algo}-super"
 random_seed = 1234
 log_interval = 10
 
@@ -29,8 +29,8 @@ def main(args):
     env_action_space = env.action_space.n
     model_path = f"/home/lab/PycharmProjects/rl-snn-norse/runs/{environment}/{network_type}-{random_seed}/policy.pt"
 
-    policy = reinforce.SNNPolicy(state_space=env_state_space, action_space=env_action_space)
-    select_action = reinforce.select_action
+    policy = actor_critic.SNNPolicy(state_space=env_state_space, action_space=env_action_space)
+    select_action = actor_critic.select_action
 
     policy.load_state_dict(torch.load(model_path))
     policy.eval()  # Use eval mode when rendering
